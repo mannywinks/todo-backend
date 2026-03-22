@@ -8,8 +8,9 @@ import Task from './models/Task.js';
 const app = express()
 
 
-
-app.use(cors())
+app.use(cors({
+    origin: "*"
+}))
 app.use (express.json())
 
 app.get("/", (req,res ) => {
@@ -19,6 +20,7 @@ app.get("/", (req,res ) => {
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('MongoDb Atlas Connected'))
 .catch((err) => console.log(err))
+
 // Define API endpoints
 // Create a new task
 app.post("/tasks", async (req,res) => {
@@ -37,11 +39,14 @@ app.delete("/tasks/:id", async (req,res ) => {
     res.json({ message: "Task deleted permanently" })
 })
 // Update a task
-app.put('/tasks/:id', async (req,res) => {
-    const updated = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true})
-    res.json(updated)
-})
-
+app.put("/tasks/:id", async (req, res) => {
+    try {
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedTask);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
