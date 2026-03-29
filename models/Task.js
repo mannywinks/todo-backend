@@ -6,6 +6,9 @@ const taskSchema = new mongoose.Schema({
     time: String,
     category: String,
     completed: Boolean,
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User"}
 })
 
-export default mongoose.model("Task", taskSchema);
+const Task =mongoose.model("Task", taskSchema)
+
+export default Task
