@@ -16,7 +16,7 @@ app.use(cors({
 }))
 app.use (express.json())
 
-app.get("/", (req,res ) => {
+app.get("/Login", (req,res ) => {
     res.send('API is running...')
 })
 
@@ -26,11 +26,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Define API endpoints
 // Create a new task
-app.post("/tasks", async (req,res) => {
-    const newTask = new Task({
-        ...req.body,
-        userId: req.userId
-    })
+app.post("/tasks", async (req, res) => {
+    const newTask = new Task(req.body)
     await newTask.save()
     res.json(newTask)
 })
@@ -82,24 +79,20 @@ app.post("/login", async (req, res) => {
     })
 
 // Get all tasks
-app.get("/tasks",async (req,res) => {
+app.get("/tasks", async (req, res) => {
     const tasks = await Task.find()
     res.json(tasks)
 })
 
-app.get("/tasks", auth, async (req,res) => {
-    const tasks = await Task.find({ userId: req.userId})
-    res.json(tasks)
-})
 // Delete a task
-app.delete("/tasks/:id", auth,  async (req,res ) => {
-    await Task.findByIdAndDelete({_id: req.params.id, userId: req.userId},req.params.id)
+app.delete("/tasks/:id", async (req, res) => {
+    await Task.findByIdAndDelete(req.params.id)
     res.json({ message: "Deleted permanently" })
 })
 // Update a task
-app.put("/tasks/:id", auth, async (req, res) => {
+app.put("/tasks/:id", async (req, res) => {
     try {
-        const updatedTask = await Task.findByIdAndUpdate( {_id: req.params.id, userId: req.userId}, req.body, { new: true });
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedTask);
     } catch (err) {
         res.status(500).json({ error: err.message });
