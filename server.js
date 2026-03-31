@@ -98,7 +98,7 @@ app.put("/tasks/:id", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-const PORT = process.env.PORT || "https://todo-backend-jxyn.onrender.com"
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
